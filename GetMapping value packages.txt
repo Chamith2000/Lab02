@@ -1,0 +1,70 @@
+@GetMapping(value = "/packages")
+    public PackageListResponse getAllPackages() {
+        List<HotelPackage> hotelPackageList = packageService.findAll();
+
+        List<PackageListItem> packageListItems = hotelPackageList.stream()
+                .map(hotelPackage -> PackageListItem.builder()
+                        .id(hotelPackage.getId())
+                        .name(hotelPackage.getName())
+                        .description(hotelPackage.getDescription())
+                        .price(hotelPackage.getPrice())
+                        .startDate(hotelPackage.getStartDate())
+                        .endDate(hotelPackage.getEndDate())
+                        .termsAndCondition(hotelPackage.getTermsAndCondition())
+                        .guestCount(hotelPackage.getGuestCount())
+                        .status(hotelPackage.getStatus())
+                        .images(hotelPackage.getPackageImages())
+                        .build())
+                .collect(Collectors.toList());
+
+        return PackageListResponse.builder()
+                .packageListItems(packageListItems)
+                .build();
+    }
+
+    @GetMapping(value = "/packages/{id}")
+    public PackageListItem getPackageById(@PathVariable Long id) throws NotFoundException {
+        HotelPackage hotelPackage = packageService.findById(id);
+
+        if (hotelPackage == null) {
+            throw new NotFoundException("Package not found with ID: " + id);
+        }
+
+        return PackageListItem.builder()
+                .id(hotelPackage.getId())
+                .name(hotelPackage.getName())
+                .description(hotelPackage.getDescription())
+                .price(hotelPackage.getPrice())
+                .startDate(hotelPackage.getStartDate())
+                .endDate(hotelPackage.getEndDate())
+                .termsAndCondition(hotelPackage.getTermsAndCondition())
+                .guestCount(hotelPackage.getGuestCount())
+                .status(hotelPackage.getStatus())
+                .images(hotelPackage.getPackageImages())
+                .build();
+    }
+
+    @DeleteMapping(value = "/packages/{id}")
+    public void deletePackageById(@PathVariable Long id) throws NotFoundException {
+        packageService.deletePackageById(id);
+    }
+    
+    
+    impl...................................
+    
+    public void deletePackageById(Long id) throws NotFoundException {
+        packageRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Package not found with ID: " + id));
+
+        packageRepository.deleteById(id);
+    }
+
+    @Override
+    public List<HotelPackage> findAll() {
+        return List.of();
+    }
+
+    @Override
+    public HotelPackage findById(Long id) {
+        return null;
+    }
